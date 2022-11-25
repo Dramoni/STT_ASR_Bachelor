@@ -2,9 +2,9 @@ import threading
 import time
 import os
 import webbrowser
+import sounddevice as sd
 import librosa
 import numpy as np
-import sounddevice as sd
 from pydub import AudioSegment
 from pydub.playback import play
 from tensorflow.keras.models import load_model
@@ -17,18 +17,19 @@ class WakeWordDetector:
         self.seconds = 2
         self.n_mfcc = 20
 
-        self.okay_audio = AudioSegment.from_wav(response_path)
-
         print("loading model...")
         self.model = load_model(model_path)
         print(self.model.summary())
-        print("WakeWordDetector initialized!")
+        print("WWD initialized!")
 
-    def usage(self):
-        print(f"{'-' * 40}\nWakeWordDetector Usage:\n\tlisten() -> listen and predict\n{'-' * 40}")
+        if response_path != None:
+            self.okay_audio = AudioSegment.from_wav(response_path)
+
+        self.detection_event = threading.Event()
 
     def listen(self):
         self.__voice_thread()
+        return self.detection_event
 
     def __listener(self):
         print("listening now...")
@@ -44,19 +45,32 @@ class WakeWordDetector:
         listen_thread = threading.Thread(target=self.__listener, name="ListeningFunction")
         listen_thread.start()
 
-    def __prediction(self, y):
+    def __prediction(self, y, detection_event):
         pred = self.model.predict(np.expand_dims(y, axis=0))
         if pred[:, 1] > 0.95:
             print("WAKE WORD DETECTED!")
             print(f"Confidence: {pred[:, 1]}")
-            # os.startfile(r"E:\Bachelor")
             play(self.okay_audio)
-            webbrowser.open("http://localhost/STT")
+            detection_event.set()
+            detection_event.clear()
         else:
             print("No wake word...")
             print(f"Confidence: {pred[:, 0]}")
+            detection_event.clear()
         time.sleep(0.1)
 
     def __prediction_thread(self, y):
-        pred_thread = threading.Thread(target=self.__prediction, name="PredictFunction", args=(y,))
+        pred_thread = threading.Thread(target=self.__prediction, name="PredictFunction", args=(y, self.detection_event))
         pred_thread.start()
+
+
+'''
+### EXAMPLE USAGE:
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+wwd = WakeWordDetector()
+event = wwd.listen()
+while event.wait():
+    webbrowser.open("http://localhost/STT")
+    wwd.stop()
+'''
