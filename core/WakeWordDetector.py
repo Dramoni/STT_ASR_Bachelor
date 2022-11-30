@@ -14,6 +14,8 @@ class WakeWordDetector:
         self.seconds = 2
         self.n_mfcc = 20
 
+        self.stop_flag = False
+
         print("loading model...")
         self.model = load_model(model_path)
         print(self.model.summary())
@@ -28,9 +30,16 @@ class WakeWordDetector:
         self.__voice_thread()
         return self.detection_event
 
+    def stop(self):
+        self.stop_flag = True
+
     def __listener(self):
         print("listening now...")
         while True:
+            if self.stop_flag:
+                print("stop listening...")
+                break
+
             rec = sd.rec(int(self.seconds * self.sample_rate), samplerate=self.sample_rate, channels=1)
             sd.wait()
             mfcc = librosa.feature.mfcc(y=rec.ravel(), sr=self.sample_rate, n_mfcc=self.n_mfcc)
@@ -40,6 +49,7 @@ class WakeWordDetector:
 
     def __voice_thread(self):
         listen_thread = threading.Thread(target=self.__listener, name="ListeningFunction")
+        listen_thread.daemon = True
         listen_thread.start()
 
     def __prediction(self, y, detection_event):
@@ -60,6 +70,7 @@ class WakeWordDetector:
     def __prediction_thread(self, y):
         pred_thread = threading.Thread(target=self.__prediction, name="PredictFunction", args=(y, self.detection_event))
         pred_thread.start()
+        pred_thread.join()
 
 
 '''
