@@ -9,8 +9,7 @@ from tensorflow.keras.models import load_model
 
 
 class WakeWordDetector:
-    def __init__(self, model_path=r"E:\Bachelor\saved_models\wake_word_conv2d_aug",
-                 response_path=r"E:\Bachelor\GLaDOS_Okay.wav"):
+    def __init__(self, response_path, model_path=r"E:\Bachelor\saved_models\wake_word_conv2d_aug"):
         self.sample_rate = 22050
         self.seconds = 2
         self.n_mfcc = 20
