@@ -1,7 +1,5 @@
 import threading
 import time
-import os
-import webbrowser
 import sounddevice as sd
 import librosa
 import numpy as np
@@ -50,7 +48,8 @@ class WakeWordDetector:
         if pred[:, 1] > 0.95:
             print("WAKE WORD DETECTED!")
             print(f"Confidence: {pred[:, 1]}")
-            play(self.okay_audio)
+            if self.okay_audio != None:
+                play(self.okay_audio)
             detection_event.set()
             detection_event.clear()
         else:
