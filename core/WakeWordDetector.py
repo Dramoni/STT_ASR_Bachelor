@@ -9,7 +9,7 @@ from tensorflow.keras.models import load_model
 
 
 class WakeWordDetector:
-    def __init__(self, response_path, model_path=r"E:\Bachelor\saved_models\wake_word_conv2d_aug"):
+    def __init__(self, response_path, model_path=r"..\saved_models\wake_word_conv2d_aug"):
         self.sample_rate = 22050
         self.seconds = 2
         self.n_mfcc = 20
@@ -56,14 +56,14 @@ class WakeWordDetector:
         pred = self.model.predict(np.expand_dims(y, axis=0))
         if pred[:, 1] > 0.95:
             print("WAKE WORD DETECTED!")
-            print(f"Confidence: {pred[:, 1]}")
+            print("Confidence: " + str(pred[:, 1]))
             if self.okay_audio != None:
                 play(self.okay_audio)
             detection_event.set()
             detection_event.clear()
         else:
             print("No wake word...")
-            print(f"Confidence: {pred[:, 0]}")
+            print("Confidence: " + str(pred[:, 0]))
             detection_event.clear()
         time.sleep(0.1)
 

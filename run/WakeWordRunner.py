@@ -5,7 +5,7 @@ import sys
 
 def main():
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-    wwd = WakeWordDetector(response_path=r"E:\Bachelor\GLaDOS_Okay.wav")
+    wwd = WakeWordDetector(response_path=r"..\responses\GLaDOS_Okay.wav")
     event = wwd.listen()
     while event.wait():
         print("Runner detected Response!")
