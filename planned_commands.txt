@@ -1,0 +1,9 @@
+öffne ... (ordner / datei)
+gehe ordner zurück
+kopiere datei ...
+füge datei ein
+schreibe ...
+starte programm ...
+wechsel fenster
+schließe (aktuelles) fenster
+wähle nächstes (tab)
