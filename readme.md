@@ -8,3 +8,6 @@ Die Funktionsweise der Pipeline ist wie folgt: Der Sprachassistent hört im hint
 Nimmt dieser das Aufwachwort ("Raspi") war, so wird das <i>Speech to Text Modell</i> (S2T) aktiviert.
 Dieses erstellt ein Transkript, welches an den <i>CommandManager</i> (CM) weitergegeben wird. Der <i>CM</i> wertet das Transkript aus und überprüft seine interne Liste an Kommandos,
 ob ein Kommando gesprochen wurde. Wurde ein Kommando erkannt, so führt dieser dann den Befehl aus.
+<br>
+<br>
+Die Pipeline soll es ermöglichen, die jeweilgen Modelle (z.B. für <i>S2T</i>) einfach auszutauschen. Außerdem sollen <i>Commands</i> beliebig hinzugefügt und geändert werden können.
