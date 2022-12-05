@@ -2,7 +2,7 @@ import os
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras as K
-from LiveAudioPreprocessor import LiveAudioPreprocessor
+from core.LiveAudioPreprocessor import LiveAudioPreprocessor
 
 
 class Transcriber:
@@ -15,8 +15,8 @@ class Transcriber:
         self.lap = LiveAudioPreprocessor()
 
     def transcribe(self, wav_path):
-        spec, audio, logits, transcriptions = self.__predict_wav(wav_path, greedy=True)
-        return transcriptions
+        spec, audio, logits, transcription = self.__predict_wav(wav_path, greedy=True)
+        return transcription
 
     def __load_model(self, model_path):
         print("Loading model...")
