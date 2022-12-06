@@ -4,6 +4,7 @@ from scipy.io import wavfile as wav
 import tensorflow as tf
 from collections import deque
 import tensorflow_io as tfio
+import sounddevice as sd
 
 
 class LiveAudioPreprocessor:
@@ -14,19 +15,26 @@ class LiveAudioPreprocessor:
         self.avg_loop_time = 0
         self.audio_queue = deque()  # contains nparrays of size = blocksize
         self.samplerate = sample_rate
-        # self.stream.start()
-        # block size 1 -> 1 frame -> 1 sample
+
+        self.stream = sd.Stream(callback=self.audio_callback, samplerate=self.samplerate, channels=1, blocksize=1, dtype="float32")
+
+    def start_recording(self):
+        self.stream.start()
+
+    def stop_recording(self):
+        self.stream.close()
 
     def audio_callback(self, indata, outdata, frames, time, status):
         # if empty
         # print(indata, frames)       # one frame is one sample, this outputs one discrete value
-        self.audio_queue.appendleft(indata.flatten())
+        indata = indata.flatten()
+        self.audio_queue.appendleft(indata)
 
     def save_audio_to_wav(self):
-        lst = [self.audio_queue.pop() for i in range(len(self.audio_queue))]
-        xxx = np.concatenate(lst)
-        wav.write("new_test.wav", self.samplerate, xxx)
-        return xxx
+        audio = self.get_whole_queue_as_np()
+        wav.write("new_test.wav", self.samplerate, audio)
+        print("Saved audio")
+        return audio
 
     def get_spectrogram_by_wav(self, wav_path):
         # self.save_audio_to_wav()
@@ -94,6 +102,13 @@ class LiveAudioPreprocessor:
             self.audio_queue.pop()
         print(len(self.audio_queue))
         return np.concatenate(lst2)
+
+    def get_whole_queue_as_np(self):
+        if len(self.audio_queue) < 1:
+            return [0.0]
+        lst = [self.audio_queue[-i] for i in range(len(self.audio_queue))]
+        audio = np.concatenate(lst)
+        return audio
 
     def get_whole_queue_as_spec(self):
         lst2 = list(itertools.islice(self.audio_queue, None, None))
