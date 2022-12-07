@@ -2,6 +2,7 @@ from core.LiveAudioPreprocessor import LiveAudioPreprocessor
 import time
 import numpy as np
 from matplotlib import pyplot as plt
+from multiprocessing import Process
 
 
 class TranscriberRunner:
@@ -44,12 +45,10 @@ class TranscriberRunner:
 
     def __validate_audio(self):
         audio = self.lap.get_whole_queue_as_np() # macht probleme -> audio stücke fehlen...
-        '''
         num_samples = self.validation_frame_size * self.lap.samplerate
         self.avg_abs_amplitudes.append((np.abs(audio[int(len(audio) - num_samples):]).mean()))
         last_avg = self.avg_abs_amplitudes[-1]
         print(f"Last Avg: {last_avg}")
-        '''
 
 tr = TranscriberRunner()
 tr.listen()

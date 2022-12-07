@@ -106,7 +106,8 @@ class LiveAudioPreprocessor:
     def get_whole_queue_as_np(self):
         if len(self.audio_queue) < 1:
             return [0.0]
-        lst = [self.audio_queue[-i] for i in range(len(self.audio_queue))]
+        audio_cpy = self.audio_queue.copy()
+        lst = [audio_cpy[-i] for i in range(len(audio_cpy))]
         audio = np.concatenate(lst)
         return audio
 
