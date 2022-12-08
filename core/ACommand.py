@@ -12,5 +12,5 @@ class ACommand(ABC):
         print(self.summary_txt)
         print("-" * len(header))
 
-    def run(self):
+    def run(self, transcript: str):
         print(f"[INFO] Running {self.name}...")

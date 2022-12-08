@@ -11,7 +11,7 @@ class CommandManager:
     def run_cmd(self, transcript):
         for key in self.cmds:
             if key in transcript:
-                self.cmds[key].run()
+                self.cmds[key].run(transcript)
                 return
 
         print(f"[INFO] Command not found for: {transcript}")
