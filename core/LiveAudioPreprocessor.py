@@ -16,7 +16,7 @@ class LiveAudioPreprocessor:
         self.audio_queue = deque()  # contains nparrays of size = blocksize
         self.samplerate = sample_rate
 
-        self.stream = sd.Stream(callback=self.audio_callback, samplerate=self.samplerate, channels=1, blocksize=1, dtype="float32")
+        self.stream = sd.Stream(callback=self.audio_callback, samplerate=self.samplerate, channels=1, blocksize=1, dtype="int16")
 
     def start_recording(self):
         self.stream.start()
@@ -32,7 +32,7 @@ class LiveAudioPreprocessor:
 
     def save_audio_to_wav(self):
         audio = self.get_whole_queue_as_np()
-        wav.write("new_test.wav", self.samplerate, audio)
+        wav.write("new_test.wav", self.samplerate, audio.astype(np.int16))
         print("Saved audio")
         return audio
 
@@ -78,7 +78,7 @@ class LiveAudioPreprocessor:
 
     def get_spectrogram_by_numpy(self):
         spectrogram = tf.signal.stft(
-            self.get_queue_as_np().astype("float32"), frame_length=self.frame_length
+            self.get_whole_queue_as_np().astype("float32"), frame_length=self.frame_length
             , frame_step=self.frame_step, fft_length=self.fft_length
         )
         # 5. We only need the magnitude, which can be derived by applying tf.abs
